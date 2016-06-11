@@ -1,0 +1,36 @@
+{
+  "name": "nia-tutorial",
+  "version": "0.0.1",
+  "description": "dataguru.cn \"Node In Action\" tutorial project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "babel src -d target --watch",
+    "compile": "babel src -d target",
+    "dev": "set NODE_ENV_dev && set DEBUG=my:* && node target/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WangBinA/nia-tutorial.git"
+  },
+  "author": "Wang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/WangBinA/nia-tutorial/issues"
+  },
+  "homepage": "https://github.com/WangBinA/nia-tutorial#readme",
+  "devDependencies": {
+    "babel-cli": "^6.9.0",
+    "babel-preset-es2015-node4": "^2.1.0",
+    "babel-preset-stage-0": "^6.5.0"
+  },
+  "dependencies": {
+    "body-parser": "^1.15.1",
+    "connect-multiparty": "^2.0.0",
+    "debug": "^2.2.0",
+    "express": "^4.13.4",
+    "mongoose": "^4.4.20",
+    "project-core": "^0.1.3",
+    "serve-static": "^1.11.1"
+  }
+}
