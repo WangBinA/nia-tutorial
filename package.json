@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "babel src -d target --watch",
     "compile": "babel src -d target",
-    "dev": "set NODE_ENV_dev && set DEBUG=my:* && node target/server.js"
+    "dev": "set NODE_ENV=dev && set DEBUG=my:* && node target/server.js"
   },
   "repository": {
     "type": "git",
