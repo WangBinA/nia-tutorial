@@ -16,7 +16,12 @@ $.init.add((done) => {
   const env = process.env.NODE_ENV || null;
   if (env) {
     debug('load env: %s', env);
-    $.config.load(path.resolve(__dirname, '../config', env + '.js'));
+    try {
+      $.config.load(path.resolve(__dirname, '../config', env + '.js'));
+    } catch (ex) {
+      ex.message = `Configuration file '${env}.js' is incorrect.\n` + ex.message;
+      throw ex;
+    }
   }
   $.env = env;
   done();
@@ -25,7 +30,12 @@ $.init.add((done) => {
 $.init.load(path.resolve(__dirname, 'init', 'mongodb.js'));
 $.init.load(path.resolve(__dirname, 'models'));
 
+$.init.load(path.resolve(__dirname, 'methods'));
+
 $.init.load(path.resolve(__dirname, 'init', 'express.js'));
+
+$.init.load(path.resolve(__dirname, 'middlewares'));
+
 $.init.load(path.resolve(__dirname, 'routes'));
 
 
