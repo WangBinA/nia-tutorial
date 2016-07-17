@@ -1,6 +1,15 @@
+'use strict';
+
+/**
+ * pratice Node.js project
+ *
+ * @author Zongmin Lei <leizongmin@gmail.com>
+ */
+
 import mongoose from 'mongoose';
 
 module.exports = function (done) {
+
   const Schema = mongoose.Schema;
   const ObjectId = Schema.ObjectId;
 
@@ -14,6 +23,7 @@ module.exports = function (done) {
 
   $.mongodb.model('User', User);
   $.model.User = $.mongodb.model('User');
-  
+
   done();
+
 };

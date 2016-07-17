@@ -1,17 +1,25 @@
+'use strict';
+
+/**
+ * pratice Node.js project
+ *
+ * @author Zongmin Lei <leizongmin@gmail.com>
+ */
 
 import mongoose from 'mongoose';
 
 module.exports = function (done) {
+
   const debug = $.createDebug('init:mongodb');
-  debug('connecting to MongoDB ...');
+  debug('connecting to MongoDB...');
+
   const conn = mongoose.createConnection($.config.get('db.mongodb'));
-  debug('hello from mongodb.js');
   $.mongodb = conn;
   $.model = {};
 
-  const Schema = mongoose.Schema;
-  const ObjectId = Schema.ObjectId;
+  const ObjectId = mongoose.Types.ObjectId;
   $.utils.ObjectId = ObjectId;
 
-  done(); 
-};
+  done();
+
+}

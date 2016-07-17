@@ -1,7 +1,15 @@
+'use strict';
+
+/**
+ * pratice Node.js project
+ *
+ * @author Zongmin Lei <leizongmin@gmail.com>
+ */
+
 import mongoose from 'mongoose';
 
 module.exports = function (done) {
-  
+
   const Schema = mongoose.Schema;
   const ObjectId = Schema.ObjectId;
 
@@ -11,13 +19,12 @@ module.exports = function (done) {
     content: {type: String},
     tags: [{type: String, index: true}],
     createdAt: {type: Date, index: true},
-    updateAt: {type: Date, index: true},
+    updatedAt: {type: Date, index: true},
     lastCommentedAt: {type: Date, index: true},
     comments: [{
-      cid: ObjectId,
       authorId: ObjectId,
       content: String,
-      createdAt: Date
+      createdAt: Date,
     }],
   });
 
@@ -25,4 +32,5 @@ module.exports = function (done) {
   $.model.Topic = $.mongodb.model('Topic');
 
   done();
+
 };

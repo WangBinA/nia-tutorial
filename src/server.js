@@ -1,59 +1,64 @@
-import ProjectCore from 'project-core';
+'use strict';
+
+/**
+ * pratice Node.js project
+ *
+ * @author Zongmin Lei <leizongmin@gmail.com>
+ */
+
 import path from 'path';
+import ProjectCore from 'project-core';
 import createDebug from 'debug';
 
 const $ = global.$ = new ProjectCore();
 
+
+// 创建Debug函数
 $.createDebug = function (name) {
   return createDebug('my:' + name);
 };
 const debug = $.createDebug('server');
 
-// console.log(process.env.NODE_ENV);
 
+// 加载配置文件
 $.init.add((done) => {
   $.config.load(path.resolve(__dirname, 'config.js'));
   const env = process.env.NODE_ENV || null;
   if (env) {
     debug('load env: %s', env);
-    try {
-      $.config.load(path.resolve(__dirname, '../config', env + '.js'));
-    } catch (ex) {
-      ex.message = `Configuration file '${env}.js' is incorrect.\n` + ex.message;
-      throw ex;
-    }
+    $.config.load(path.resolve(__dirname, '../config', env + '.js'));
   }
   $.env = env;
   done();
 });
 
+
+// 初始化MongoDB
 $.init.load(path.resolve(__dirname, 'init', 'mongodb.js'));
+// 加载Models
 $.init.load(path.resolve(__dirname, 'models'));
 
+
+// 加载methods
 $.init.load(path.resolve(__dirname, 'methods'));
 
+
+// 初始化Express
 $.init.load(path.resolve(__dirname, 'init', 'express.js'));
-
+// 初始化中间件
 $.init.load(path.resolve(__dirname, 'middlewares'));
-
+// 加载路由
 $.init.load(path.resolve(__dirname, 'routes'));
 
 
-
-$.init(function (err) {
+// 初始化
+$.init((err) => {
   if (err) {
     console.error(err);
     process.exit(-1);
   } else {
-    console.log('inited');
+    console.log('inited [env=%s]', $.env);
   }
 
-  // // testing db connection
-  // const item = $.model.User({
-  //   name: `User${$.utils.date('Ymd')}`,
-  //   password: '123456',
-  //   nickname: '测试用户',
-  // });
-  // item.save(console.log);
-
+  require('./test');
 });

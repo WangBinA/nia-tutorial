@@ -1,21 +1,27 @@
+'use strict';
+
+/**
+ * pratice Node.js project
+ *
+ * @author Zongmin Lei <leizongmin@gmail.com>
+ */
+
 module.exports = function (done) {
-  const debug = $.createDebug('init:route');
-  debug('initing route from login.js');
-  
+
+
   $.router.get('/api/login_user', async function (req, res, next) {
     res.apiSuccess({user: req.session.user, token: req.session.logout_token});
   });
 
+
   $.router.post('/api/login', async function (req, res, next) {
-    if (!req.body.password) {return next(new Error('missing password'));}
+
+    if (!req.body.password) return next(new Error('missing password'));
 
     const user = await $.method('user.get').call(req.body);
-    if (!user) {return next(new Error('user does not exists'));}
-
-    // throw new Error('fuck');
+    if (!user) return next(new Error('user does not exists'));
 
     if (!$.utils.validatePassword(req.body.password, user.password)) {
-      console.log('hello from login.js');
       return next(new Error('incorrect password'));
     }
 
@@ -23,9 +29,12 @@ module.exports = function (done) {
     req.session.logout_token = $.utils.randomString(20);
 
     res.apiSuccess({token: req.session.logout_token});
+
   });
 
+
   $.router.get('/api/logout', async function (req, res, next) {
+
     if (req.session.logout_token && req.query.token !== req.session.logout_token) {
       return next(new Error('invalid token'));
     }
@@ -34,16 +43,29 @@ module.exports = function (done) {
     delete req.session.logout_token;
 
     res.apiSuccess({});
+
   });
+
+
+  $.router.post('/api/logout', async function (req, res, next) {
+
+    delete req.session.user;
+    delete req.session.logout_token;
+
+    res.apiSuccess({});
+
+  });
+
 
   $.router.post('/api/signup', async function (req, res, next) {
-    try {
-      const user = await $.method('user.add').call(req.body);
-      res.apiSuccess({user: user});
-    } catch (ex) {
-      next(ex);
-    }
+
+    const user = await $.method('user.add').call(req.body);
+
+    res.apiSuccess({user: user});
+
   });
 
+
   done();
+
 };
