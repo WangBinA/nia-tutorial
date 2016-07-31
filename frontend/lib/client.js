@@ -74,3 +74,23 @@ export function addComment(id, content) {
 export function deleteComment(id, cid) {
   return request('post', `topic/item/${id}/comment/delete`, {cid});
 }
+
+export function updateProfile(email, nickname, about) {
+  return request('post', 'user/profile', {email, nickname, about});
+}
+
+export function deleteTopic(id) {
+  return request('delete', `topic/item/${id}/`);
+}
+
+export function notificationCount(isRead) {
+  return request('get', 'notification/count', {isRead}).then(ret => ret.count);
+}
+
+export function notificationList() {
+  return request('get', 'notification/list');
+}
+
+export function notificationSetRead(id) {
+  return request('post', `notification/${id}/read`);
+}

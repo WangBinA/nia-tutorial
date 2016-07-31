@@ -13,6 +13,14 @@ module.exports = function (done) {
 
     req.body.author = req.session.user._id;
 
+    // 发布频率限制
+    {
+      const key = `addtopic:${req.body.author}:${$.utils.date('YmdH')}`;
+      const limit = 2;
+      const ok = await $.limiter.incr(key, limit);
+      if (!ok) throw new Error('out of limit');
+    }
+
     if ('tags' in req.body) {
       req.body.tags = req.body.tags.split(',').map(v => v.trim()).filter(v => v);
     }
@@ -50,7 +58,22 @@ module.exports = function (done) {
     const topic = await $.method('topic.get').call({_id: req.params.topic_id});
     if (!topic) return next(new Error(`topic ${req.params.topic_id} does not exists`));
 
-    res.apiSuccess({topic});
+    const userId = req.session.user && req.session.user._id && req.session.user._id.toString();
+    const isAdmin = req.session.user && req.session.user.isAdmin;
+
+    const result = {};
+    result.topic = $.utils.cloneObject(topic);
+    result.topic.permission = {
+      edit: isAdmin || userId === result.topic.author._id,
+      delete: isAdmin || userId === result.topic.author._id,
+    };
+    result.topic.comments.forEach(item => {
+      item.permission = {
+        delete: isAdmin || userId === item.author._id,
+      };
+    });
+
+    res.apiSuccess(result);
 
   });
 
@@ -84,6 +107,15 @@ module.exports = function (done) {
 
     req.body._id = req.params.topic_id;
     req.body.author = req.session.user._id;
+
+    // 发布频率限制
+    {
+      const key = `addcomment:${req.body.author}:${$.utils.date('YmdH')}`;
+      const limit = 20;
+      const ok = await $.limiter.incr(key, limit);
+      if (!ok) throw new Error('out of limit');
+    }
+
     const comment = await $.method('topic.comment.add').call(req.body);
 
     res.apiSuccess({comment});
@@ -101,12 +133,16 @@ module.exports = function (done) {
     };
     const comment = await $.method('topic.comment.get').call(query);
 
-    if (!(comment && comment.comments && comment.comments[0] &&
-        comment.comments[0].author.toString() === req.session.user._id.toString())) {
-      return next(new Error('access denied'));
+    if (comment && comment.comments && comment.comments[0]) {
+      const item = comment.comments[0];
+      if (req.session.user.isAdmin || item.author.toString() === req.session.user._id.toString()) {
+        await $.method('topic.comment.delete').call(query);
+      } else {
+        return next(new Error('access denied'));
+      }
+    } else {
+      return next(new Error('comment does not exists'));
     }
-
-    await $.method('topic.comment.delete').call(query);
 
     res.apiSuccess({comment: comment.comments[0]});
 
