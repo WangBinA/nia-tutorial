@@ -11,10 +11,14 @@ export default class Header extends React.Component {
 
   componentDidMount() {
     loginUser()
-      .then(user => this.setState({user}))
-      .catch(err => console.error(err));
-    notificationCount(false)
-      .then(notificationCount => this.setState({notificationCount}))
+      .then(function (user) {
+        this.setState({user});
+        if (user) {
+          notificationCount(false)
+            .then(notificationCount => this.setState({notificationCount}))
+            .catch(err => console.error(err));
+        }
+      }.bind(this))
       .catch(err => console.error(err));
   }
 

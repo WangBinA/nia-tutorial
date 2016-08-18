@@ -2,4 +2,4 @@
 process.env.NODE_ENV = 'dev';
 process.env.DEBUG = 'my:*';
 
-require('./server');
+require('./target/server');

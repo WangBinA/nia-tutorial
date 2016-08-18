@@ -54,8 +54,9 @@ module.exports = function (done) {
     next();
   });
 
-  app.use(router);
   app.use('/static', serveStatic(path.resolve(__dirname, '../../static')));
+  app.use('/build', serveStatic(path.resolve(__dirname, '../../frontend/build')));
+  app.use(router);
 
   app.use('/api', function (err, req, res, next) {
     debug('API error: %s', err && err.stack || err);
@@ -63,6 +64,7 @@ module.exports = function (done) {
   });
 
   app.listen($.config.get('web.port'), (err) => {
+    debug('listening on ', $.config.get('web.port'));
     done(err);
   });
 

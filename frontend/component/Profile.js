@@ -1,6 +1,6 @@
 import React from 'react';
 import jQuery from 'jquery';
-import {loginUser, updateProfile} from '../lib/client';
+import {loginUser, updateProfile, unbindGithub} from '../lib/client';
 import {redirectURL} from '../lib/utils';
 
 export default class Profile extends React.Component {
@@ -34,6 +34,21 @@ export default class Profile extends React.Component {
       });
   }
 
+  handleUnbindGithub(e) {
+    console.log('unbindGithub called');
+    unbindGithub()
+      .then(function (ret) {
+        if (ret && ret.unbindGithub === true) {
+          alert('Unbinding Github Succeed');
+        } else {
+          alert('Unbinding Github failed');
+        }
+      })
+      .catch(err => {
+        alert(err);
+      });
+  }
+
   render() {
     if (!this.state._id) {
       return (
@@ -53,6 +68,13 @@ export default class Profile extends React.Component {
               <div className="form-group">
                 <label htmlFor="ipt-nickname">昵称</label>
                 <input type="text" className="form-control" id="ipt-nickname" onChange={this.handleChange.bind(this, 'nickname')} placeholder="" value={this.state.nickname} />
+              </div>
+              <div className="form-group">
+                <label htmlFor="github-name">Github User Name</label>
+                <div type="text" className="form-control" id="github-name" onChange={this.handleChange.bind(this, 'about')} placeholder="" >
+                  {this.state.githubUsername}
+                </div>
+                <button type="button" className="btn btn-primary" onClick={this.handleUnbindGithub.bind(this)}>Unbind</button>
               </div>
               <div className="form-group">
                 <label htmlFor="ipt-about">个人介绍</label>

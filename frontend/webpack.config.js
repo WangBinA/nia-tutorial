@@ -34,7 +34,7 @@ module.exports = {
       loader: "file-loader"
     }, {
       test: /\/bootstrap\/js\//,
-      loader: 'imports?jQuery=jquery'
+      loader: 'imports?jQuery=jquery,$=jquery,this=>window'
     }]
   },
   devServer: {
@@ -55,5 +55,10 @@ module.exports = {
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
+    new webpack.ProvidePlugin({
+            $: "jquery",
+            jQuery: "jquery",
+            "window.jQuery": "jquery"
+        })
   ],
 };
