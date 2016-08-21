@@ -25,8 +25,10 @@ $.init.add((done) => {
   $.config.load(path.resolve(__dirname, 'config.js'));
   const env = process.env.NODE_ENV || null;
   if (env) {
-    debug('load env: %s', env);
-    $.config.load(path.resolve(__dirname, '../config', env + '.js'));
+    env.split(',').forEach(conf => {
+      debug('load env: %s', conf);
+      $.config.load(path.resolve(__dirname, '../config', conf + '.js'));
+    });
   }
   $.env = env;
   done();
@@ -67,5 +69,4 @@ $.init((err) => {
     console.log('inited [env=%s]', $.env);
   }
 
-  require('./test');
 });

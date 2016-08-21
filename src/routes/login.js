@@ -67,39 +67,44 @@ module.exports = function (done) {
   });
 
 
-  $.router.post('/api/logout', async function (req, res, next) {
+  // $.router.post('/api/logout', async function (req, res, next) {
 
-    delete req.session.user;
-    delete req.session.logout_token;
+  //   delete req.session.user;
+  //   delete req.session.logout_token;
 
-    res.apiSuccess({});
+  //   res.apiSuccess({});
 
-  });
+  // });
 
 
   $.router.post('/api/signup', async function (req, res, next) {
 
-    // 频率限制
-    {
-      const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-      const key = `signup:${ip}:${$.utils.date('Ymd')}`;
-      const limit = 2;
-      const ok = await $.limiter.incr(key, limit);
-      if (!ok) throw new Error('out of limit');
+    try {
+      // 频率限制
+      {
+        const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        const key = `signup:${ip}:${$.utils.date('Ymd')}`;
+        const limit = 2;
+        const ok = await $.limiter.incr(key, limit);
+        if (!ok) throw new Error('out of limit');
+      }
+
+      const user = await $.method('user.add').call(req.body);
+
+      $.method('mail.sendTemplate').call({
+        to: user.email,
+        subject: '欢迎',
+        template: 'welcome',
+        data: user,
+      }, err => {
+        if (err) console.error(err);
+      });
+
+      res.apiSuccess({user: user});
+
+    } catch (e) {
+      next(e);
     }
-
-    const user = await $.method('user.add').call(req.body);
-
-    $.method('mail.sendTemplate').call({
-      to: user.email,
-      subject: '欢迎',
-      template: 'welcome',
-      data: user,
-    }, err => {
-      if (err) console.error(err);
-    });
-
-    res.apiSuccess({user: user});
 
   });
 
